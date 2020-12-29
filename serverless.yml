@@ -1,0 +1,96 @@
+# Welcome to Serverless!
+
+service: serverless-terraform
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  endpointType: PRIVATE
+  vpcEndpointIds:
+    - ${ssm:/serverless/apigw_endpoints}
+  runtime: python3.8
+  stage: dev
+  region: eu-west-2
+  timeout: 10
+  tracing:
+    apiGateway: true
+    lambda: true
+  vpc:
+    subnetIds: 
+      - ${ssm:/serverless/subnets1}
+      - ${ssm:/serverless/subnets2}
+    securityGroupIds:
+      - ${ssm:/serverless/lambda_sg}
+
+  resourcePolicy:
+    - Effect: Allow
+      Principal: '*'
+      Action: execute-api:Invoke
+      Resource:
+        - execute-api:/*/*/*
+    - Effect: Deny
+      Principal: '*'
+      Action: execute-api:Invoke
+      Resource:
+        - execute-api:/*/*/*
+      Condition:
+        StringNotEquals:
+          aws:SourceVpce:
+            - ${ssm:/serverless/apigw_endpoints}
+
+
+  iamRoleStatements:
+    - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+      Action:
+        - events:PutEvents
+      Resource:
+        - 'Fn::Join':
+          - ':'
+          -
+            - 'arn:aws:events'
+            - Ref: 'AWS::Region'
+            - Ref: 'AWS::AccountId'
+            - 'event-bus/default'
+          
+# you can define service wide environment variables here
+  environment:
+    DATABASE_PASSWORD: ${ssm:/database/testdb/endpoint}
+
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+
+
+functions:
+    
+  processor:
+    #onError: ${ssm:/serverless/dlq}
+    handler: processor.hello
+    events:
+      - eventBridge:
+          pattern:
+            source:
+              - virtual_racing.dispatch
+
+  enricher:
+    #onError: ${ssm:/serverless/dlq}
+    handler: enricher.hello
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true
+  dec:
+    #onError: ${ssm:/serverless/dlq}
+    handler: dec.hello
+    events:
+      - eventBridge:
+          schedule: rate(5 minutes)
+
