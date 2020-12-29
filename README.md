@@ -56,8 +56,8 @@ Serverless needs the `serverless-python-requirements` plugin installed `npm inst
 
 ### Installing
 
-[Installing Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-[Installing Serverless](https://www.serverless.com/framework/docs/getting-started/)
+* [Installing Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+* [Installing Serverless](https://www.serverless.com/framework/docs/getting-started/)
 
 
 ## Deployment
