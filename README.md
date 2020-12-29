@@ -2,7 +2,7 @@
 
 Exercise in building out a simple architecture in Serverless & Terraform 
 
-![Architecture](architecture.png)
+![Architecture](architecture2.png)
 
 * Private API Gateway
 * Lambdas
@@ -32,9 +32,10 @@ then using the saved parameter in `serverless.yml` as follows
       - ${ssm:/serverless/subnets1}
 ```
 * All of the architecture building blocks and interactions were acheivable using both frameworks with the exception of applying the DLQ to the Lambdas, 
-which was'nt possible in version 2.3 [due to a race condition](https://www.serverless.com/framework/docs/providers/aws/guide/functions/). Can probably find another was of doing this or 
-replace with the new [Lambda Desinations](https://aws.amazon.com/blogs/compute/introducing-aws-lambda-destinations/) capability
+which was'nt possible in version 2.3 [due to a race condition](https://www.serverless.com/framework/docs/providers/aws/guide/functions/). Can probably find another was of doing this or replace with the new [Lambda Desinations](https://aws.amazon.com/blogs/compute/introducing-aws-lambda-destinations/) capability
 * X-Ray results where somewhat unexpected as the tracing did not show end to end traces through the eventbridge, could be additional instrumentation required.
+
+![X-Ray](X-ray.png)
 
 
 ## Getting Started
@@ -44,9 +45,7 @@ Both Terraform and Serverless need configuring for AWS
 * [Serverless](https://www.serverless.com/framework/docs/providers/aws/guide/credentials/)
 * [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 
-Serverless needs the `serverless-python-requirements` plugin installed `npm install --save serverless-python-requirements`
-
-Once the 
+Serverless needs the `serverless-python-requirements` plugin installed `npm install --save serverless-python-requirements` for packaging
 
 
 ### Prerequisites
